@@ -1,3 +1,5 @@
+const goodbyeTimeout = 10000;
+
 const onTimeout = () => {
   console.log("Goodbye world");
 };
@@ -12,6 +14,6 @@ const onUserExit = () => {
 console.log("Hello World");
 const startTimestamp = Date.now();
 
-setTimeout(onTimeout, 10000);
+setTimeout(onTimeout, goodbyeTimeout);
 
 process.on("SIGINT", onUserExit);
