@@ -1,8 +1,8 @@
-const goodbye = () => {
+const onTimeout = () => {
   console.log("Goodbye world");
 };
 
-const sigint = () => {
+const onUserExit = () => {
   const endTimestamp = Date.now();
   const secondsElapsed = Math.round((endTimestamp - startTimestamp) / 1000);
   console.log(`Stopped after ${secondsElapsed} seconds`);
@@ -12,6 +12,6 @@ const sigint = () => {
 console.log("Hello World");
 const startTimestamp = Date.now();
 
-setTimeout(goodbye, 10000);
+setTimeout(onTimeout, 10000);
 
-process.on("SIGINT", sigint);
+process.on("SIGINT", onUserExit);
