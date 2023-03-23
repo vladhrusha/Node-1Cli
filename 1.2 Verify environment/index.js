@@ -1,19 +1,24 @@
-const childProcess = require("node:child_process");
+let versionOption = "-v";
 
-const onOutputPackageVersion = (package) => {
-  childProcess.exec(`${package} -v`, (error, stdout, stderr) => {
-    if (error) {
-      error.code = "127";
-      console.error(error.code);
-      console.error(`${stderr}`);
-      return;
-    }
-    console.log(`${stdout}`);
+const util = require("util");
+const exec = util.promisify(require("child_process").exec);
+
+const packageArray = ["docker", "git", "npm", "nvm", "node"];
+let promisesStack = [];
+
+async function createPromise(package) {
+  const promise = await exec(`${package} ${versionOption}`);
+  return promise;
+}
+
+packageArray.forEach((package) => {
+  promisesStack.push(createPromise(package));
+});
+
+Promise.all(promisesStack)
+  .then((values) => {
+    console.log(values);
+  })
+  .catch((err) => {
+    console.log(err);
   });
-};
-
-onOutputPackageVersion("docker");
-onOutputPackageVersion("git");
-onOutputPackageVersion("npm");
-onOutputPackageVersion("nvm");
-onOutputPackageVersion("node");
