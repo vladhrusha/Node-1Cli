@@ -1,24 +1,18 @@
-let versionOption = "-v";
-
 const util = require("util");
 const exec = util.promisify(require("child_process").exec);
 
-const packageArray = ["docker", "git", "npm", "nvm", "node"];
-let promisesStack = [];
+const packageArray = [
+  { name: "docker", versionOption: "-v" },
+  { name: "git", versionOption: "-v" },
+  { name: "npm", versionOption: "-v" },
+  { name: "nvm", versionOption: "-v" },
+  { name: "node", versionOption: "-v" },
+];
 
-async function createPromise(package) {
-  const promise = await exec(`${package} ${versionOption}`);
-  return promise;
-}
+const promiseStack = packageArray.map(
+  async ({ name, versionOption }) => await exec(`${name} ${versionOption}`)
+);
 
-packageArray.forEach((package) => {
-  promisesStack.push(createPromise(package));
+Promise.all(promiseStack).then((values) => {
+  console.log(values);
 });
-
-Promise.all(promisesStack)
-  .then((values) => {
-    console.log(values);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
