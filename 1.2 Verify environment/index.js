@@ -9,8 +9,8 @@ const packageArray = [
   { name: "node", versionOption: "-v" },
 ];
 
-const promiseStack = packageArray.map(
-  async ({ name, versionOption }) => await exec(`${name} ${versionOption}`)
+const promiseStack = packageArray.map(({ name, versionOption }) =>
+  exec(`${name} ${versionOption}`)
 );
 
 Promise.all(promiseStack).then((values) => {
