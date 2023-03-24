@@ -6,3 +6,4 @@
 
     1. navigate into "1.3 Calculate md5 of string" directory in your terminal
     2. once there use command "node index.js {your string}"
+    3. the result is written to write.txt
