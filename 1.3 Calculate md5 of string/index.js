@@ -11,5 +11,6 @@ try {
   let stringMD5 = crypto.createHash("md5").update(string).digest("hex");
   writeStream.write(stringMD5);
 } catch (err) {
-  writeStream.write("crypto support is disabled!");
+  writeStream.write("crypto support is disabled! \n");
+  writeStream.write(err.code);
 }
