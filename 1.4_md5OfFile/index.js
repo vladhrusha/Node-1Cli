@@ -9,7 +9,7 @@ readFilePromise
     console.log(md5String);
   })
   .catch((err) => {
-    console.log(err.code);
+    console.log(err);
     process.on("exit", (code) => {
       console.log(`About to exit with code: ${code}`);
     });
