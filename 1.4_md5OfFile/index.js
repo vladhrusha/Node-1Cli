@@ -1,17 +1,30 @@
-const util = require("util");
 const crypto = require("node:crypto");
-const readFile = util.promisify(require("node:fs").readFile);
-const readFilePromise = readFile("read.txt", "utf8");
+const fs = require("node:fs");
 
-readFilePromise
-  .then((fileContent) => {
-    let md5String = crypto.createHash("md5").update(fileContent).digest("hex");
-    console.log(md5String);
-  })
-  .catch((err) => {
-    console.log(err);
-    process.on("exit", (code) => {
-      console.log(`About to exit with code: ${code}`);
+function getChecksum(path) {
+  return new Promise(function (resolve, reject) {
+    const hash = crypto.createHash("md5");
+    const input = fs.createReadStream(path);
+    input.on("error", (err) => {
+      process.on("exit", (code) => {
+        console.log(`About to exit with code: ${code}`);
+        console.log(err);
+      });
+      process.exit(1);
     });
-    process.exit(1);
+
+    input.on("data", function (chunk) {
+      hash.update(chunk);
+    });
+
+    input.on("close", function () {
+      resolve(hash.digest("hex"));
+    });
   });
+}
+
+Promise.all([getChecksum("read.txt"), getChecksum("12,5GB.mkv")]).then(
+  (values) => {
+    console.log(values);
+  }
+);
