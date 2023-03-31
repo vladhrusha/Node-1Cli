@@ -1,27 +1,22 @@
 const fs = require("node:fs");
 
+const readline = require("node:readline/promises");
+const { output } = require("node:process");
+
 function countCountries(path) {
   return new Promise(function (resolve, reject) {
     const input = fs.createReadStream(path);
+    const rl = readline.createInterface({ input, output });
     const countriesCounter = new Map();
 
     input.on("error", (err) => {
       reject(err);
     });
 
-    input.on("data", function (chunk) {
-      let linesArr = chunk.toString("utf8").split("\n");
-      let countriesArr = linesArr.map((line) => {
-        let index = line.indexOf(",");
-        return line.slice(0, index);
-      });
-
-      countriesArr.shift();
-      countriesArr = countriesArr.filter((country) => country != '""');
-
-      countriesArr.forEach((country) => {
-        countriesCounter.set(country, countriesCounter.get(country) + 1 || 1);
-      });
+    rl.on("line", function (chunk) {
+      let index = chunk.indexOf(",");
+      let country = chunk.slice(0, index);
+      countriesCounter.set(country, countriesCounter.get(country) + 1 || 1);
     });
 
     input.on("close", function () {
