@@ -3,7 +3,7 @@ const fs = require("node:fs");
 const readline = require("node:readline/promises");
 const { output } = require("node:process");
 
-async function countCountries(path) {
+function countCountries(path) {
   return new Promise(async function (resolve, reject) {
     const input = fs.createReadStream(path);
     const rl = readline.createInterface({ input, output });
@@ -14,12 +14,13 @@ async function countCountries(path) {
     });
 
     for await (const line of rl) {
-      let index = line.indexOf(",");
-      let country = line.slice(0, index);
+      let country = line.slice(0, line.indexOf(","));
       countriesCounter.set(country, countriesCounter.get(country) + 1 || 1);
     }
 
     input.on("close", function () {
+      countriesCounter.delete('""');
+      countriesCounter.delete("country");
       resolve(countriesCounter);
     });
   });
