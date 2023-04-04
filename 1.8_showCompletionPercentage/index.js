@@ -11,6 +11,7 @@ function countCountries(path) {
         "CLI Progress |" +
         "{bar}" +
         "| {percentage}% | {value}/{total} megabytes",
+      fps: 1,
     },
     cliProgress.Presets.shades_classic
   );
