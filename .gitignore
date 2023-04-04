@@ -3,5 +3,6 @@
 1.5_md5OfFileUsingModule/12,5GB.mkv
 1.5_md5OfFileUsingModule/node_modules
 1.5_md5OfFileUsingModule/read.txt
-1.6_processBigFile/free_company_dataset.csv
 1.6_processBigFile/read.txt
+1.7_printFromFile/free_company_dataset.csv
+1.7_printFromFile/garbage.js
