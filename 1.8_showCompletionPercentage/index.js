@@ -10,8 +10,9 @@ function countCountries(path) {
       format:
         "CLI Progress |" +
         "{bar}" +
-        "| {percentage}% | {value}/{total} megabytes",
+        "| {percentage}% | ETA: {eta}s| {value}/{total} megabytes",
       fps: 1,
+      etaBuffer: 100,
     },
     cliProgress.Presets.shades_classic
   );
@@ -31,6 +32,7 @@ function countCountries(path) {
     input.on("data", (chunk) => {
       barCounter = barCounter + Buffer.byteLength(chunk, "utf8");
       bar1.update(Math.round(barCounter / 1024 / 1024));
+      bar1.updateETA();
     });
 
     for await (const line of rl) {
