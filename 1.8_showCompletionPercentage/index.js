@@ -4,26 +4,29 @@ const cliProgress = require("cli-progress");
 const readline = require("node:readline/promises");
 const { output } = require("node:process");
 
-function countCountries(path) {
-  const bar1 = new cliProgress.SingleBar(
-    {
-      format:
-        "CLI Progress |" +
-        "{bar}" +
-        "| {percentage}% | ETA: {eta}s| {value}/{total} megabytes",
-      fps: 1,
-      etaBuffer: 100,
-    },
-    cliProgress.Presets.shades_classic
-  );
+const bar1 = new cliProgress.SingleBar(
+  {
+    format:
+      "CLI Progress |" +
+      "{bar}" +
+      "| {percentage}% | ETA: {eta}s| {value}/{total} megabytes",
+    fps: 1,
+    etaBuffer: 100,
+  },
+  cliProgress.Presets.shades_classic
+);
+const filePath = "free_company_dataset.csv";
 
-  return new Promise(async function (resolve, reject) {
-    const input = fs.createReadStream(path);
+const countCountriesWhileIndicatingProgressPromise = new Promise(
+  async function (resolve, reject) {
+    const input = fs.createReadStream(filePath);
     const rl = readline.createInterface({ input, output });
     const countriesCounter = new Map();
     let barCounter = 0;
 
-    var fileSizeInMegaBytes = Math.round(fs.statSync(path).size / 1024 / 1024);
+    var fileSizeInMegaBytes = Math.round(
+      fs.statSync(filePath).size / 1024 / 1024
+    );
     bar1.start(fileSizeInMegaBytes, barCounter);
 
     input.on("error", (err) => {
@@ -46,10 +49,11 @@ function countCountries(path) {
       bar1.stop();
       resolve(countriesCounter);
     });
-  });
-}
+  }
+);
+
 const startTimestamp = Date.now();
-countCountries("free_company_dataset.csv")
+readFileWhileIndicatingProgressPromise
   .then((values) => {
     console.log(values);
     const endTimestamp = Date.now();
