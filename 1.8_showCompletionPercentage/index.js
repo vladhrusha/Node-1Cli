@@ -53,7 +53,7 @@ const countCountriesWhileIndicatingProgressPromise = new Promise(
 );
 
 const startTimestamp = Date.now();
-readFileWhileIndicatingProgressPromise
+countCountriesWhileIndicatingProgressPromise
   .then((values) => {
     console.log(values);
     const endTimestamp = Date.now();
