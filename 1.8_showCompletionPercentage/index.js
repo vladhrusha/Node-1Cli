@@ -4,21 +4,20 @@ const cliProgress = require("cli-progress");
 const readline = require("node:readline/promises");
 const { output } = require("node:process");
 
-const bar1 = new cliProgress.SingleBar(
-  {
-    format:
-      "CLI Progress |" +
-      "{bar}" +
-      "| {percentage}% | ETA: {eta}s| {value}/{total} megabytes",
-    fps: 1,
-    etaBuffer: 100,
-  },
-  cliProgress.Presets.shades_classic
-);
-const filePath = "free_company_dataset.csv";
-
 const countCountriesWhileIndicatingProgressPromise = new Promise(
   async function (resolve, reject) {
+    const bar1 = new cliProgress.SingleBar(
+      {
+        format:
+          "CLI Progress |" +
+          "{bar}" +
+          "| {percentage}% | ETA: {eta}s| {value}/{total} megabytes",
+        fps: 1,
+        etaBuffer: 100,
+      },
+      cliProgress.Presets.shades_classic
+    );
+    const filePath = "free_company_dataset.csv";
     const input = fs.createReadStream(filePath);
     const rl = readline.createInterface({ input, output });
     const countriesCounter = new Map();
