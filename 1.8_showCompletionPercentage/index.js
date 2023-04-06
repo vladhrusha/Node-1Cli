@@ -1,58 +1,57 @@
 const fs = require("node:fs");
 const cliProgress = require("cli-progress");
+const { promisify } = require("util");
 
 const readline = require("node:readline/promises");
 const { output } = require("node:process");
 
-const countCountriesWhileIndicatingProgressPromise = new Promise(
-  async function (resolve, reject) {
-    const bar1 = new cliProgress.SingleBar(
-      {
-        format:
-          "CLI Progress |" +
-          "{bar}" +
-          "| {percentage}% | ETA: {eta}s| {value}/{total} megabytes",
-        fps: 1,
-        etaBuffer: 100,
-      },
-      cliProgress.Presets.shades_classic
-    );
-    const filePath = "free_company_dataset.csv";
-    const input = fs.createReadStream(filePath);
-    const rl = readline.createInterface({ input, output });
-    const countriesCounter = new Map();
-    let barCounter = 0;
+const countCountriesWhileIndicatingProgress = async () => {
+  const bar1 = new cliProgress.SingleBar(
+    {
+      format:
+        "CLI Progress |" +
+        "{bar}" +
+        "| {percentage}% | ETA: {eta}s| {value}/{total} megabytes",
+      fps: 1,
+      etaBuffer: 100,
+    },
+    cliProgress.Presets.shades_classic
+  );
+  const filePath = "free_company_dataset.csv";
+  const input = fs.createReadStream(filePath);
+  const rl = readline.createInterface({ input, output });
+  const countriesCounter = new Map();
+  let barCounter = 0;
 
-    var fileSizeInMegaBytes = Math.round(
-      fs.statSync(filePath).size / 1024 / 1024
-    );
-    bar1.start(fileSizeInMegaBytes, barCounter);
+  var fileSizeInMegaBytes = Math.round(
+    fs.statSync(filePath).size / 1024 / 1024
+  );
+  bar1.start(fileSizeInMegaBytes, barCounter);
 
-    input.on("error", (err) => {
-      reject(err);
-    });
-    input.on("data", (chunk) => {
-      barCounter = barCounter + Buffer.byteLength(chunk, "utf8");
-      bar1.update(Math.round(barCounter / 1024 / 1024));
-      bar1.updateETA();
-    });
+  input.on("error", (err) => {
+    throw err;
+  });
+  input.on("data", (chunk) => {
+    barCounter = barCounter + Buffer.byteLength(chunk, "utf8");
+    bar1.update(Math.round(barCounter / 1024 / 1024));
+    bar1.updateETA();
+  });
 
-    for await (const line of rl) {
-      let country = line.slice(0, line.indexOf(","));
-      countriesCounter.set(country, countriesCounter.get(country) + 1 || 1);
-    }
-
-    input.on("close", function () {
-      countriesCounter.delete('""');
-      countriesCounter.delete("country");
-      bar1.stop();
-      resolve(countriesCounter);
-    });
+  for await (const line of rl) {
+    let country = line.slice(0, line.indexOf(","));
+    countriesCounter.set(country, countriesCounter.get(country) + 1 || 1);
   }
-);
+
+  const onClose = promisify(input.on).bind(input);
+  await onClose("close");
+  countriesCounter.delete('""');
+  countriesCounter.delete("country");
+  bar1.stop();
+  return countriesCounter;
+};
 
 const startTimestamp = Date.now();
-countCountriesWhileIndicatingProgressPromise
+countCountriesWhileIndicatingProgress()
   .then((values) => {
     console.log(values);
     const endTimestamp = Date.now();
